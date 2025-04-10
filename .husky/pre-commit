@@ -1,7 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Create border box function
+# Bordered UI functions
 print_boxed_message() {
   echo "┌────────────────────────────────────────────┐"
   echo "│ 🚀 Husky Pre-commit Hook                   │"
@@ -25,17 +25,54 @@ print_fail_box() {
   echo "└────────────────────────────────────────────┘"
 }
 
-# Start
+print_commit_msg_header() {
+  echo ""
+  echo "┌────────────────────────────────────────────┐"
+  echo "│ 🧾 Validating commit message format        │"
+  echo "└────────────────────────────────────────────┘"
+}
+
+print_commit_passed() {
+  echo ""
+  echo "┌────────────────────────────────────────────┐"
+  echo "│ ✅ Commit message is valid.                │"
+  echo "└────────────────────────────────────────────┘"
+}
+
+print_commit_failed() {
+  echo ""
+  echo "┌────────────────────────────────────────────┐"
+  echo "│ ❌ Invalid commit message format!          │"
+  echo "│ 💡 Use format: type: description           │"
+  echo "│ ✏️  Example: feat: add login endpoint       │"
+  echo "└────────────────────────────────────────────┘"
+}
+
+# Step 1: Lint check
 echo ""
 print_boxed_message
 echo ""
-
 pnpm lint-staged
 LINT_EXIT_CODE=$?
 
-if [ $LINT_EXIT_CODE -eq 0 ]; then
-  print_success_box
-else
+if [ $LINT_EXIT_CODE -ne 0 ]; then
   print_fail_box
   exit 1
 fi
+
+# Step 2: Commit message validation
+print_commit_msg_header
+
+COMMIT_MSG_FILE=$(cat .git/COMMIT_EDITMSG)
+
+echo "$COMMIT_MSG_FILE" | npx --no-install commitlint
+
+if [ $? -eq 0 ]; then
+  print_commit_passed
+else
+  print_commit_failed
+  exit 1
+fi
+
+# Done
+print_success_box

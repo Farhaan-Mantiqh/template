@@ -39,7 +39,7 @@ export default function HomePage() {
       }`}>
       <h1 className="mb-4 text-3xl font-bold">Current Theme: {theme}</h1>
       <Button onClick={toggleTheme}>
-        {theme === 'light' ? 'light' : 'dark'}
+        {theme === 'light' ? 'Light' : 'Dark'}
       </Button>
 
       <div className="mt-8">
