@@ -1,41 +1,42 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Create border box function
-print_boxed_message() {
-  echo "┌────────────────────────────────────────────┐"
-  echo "│ 🚀 Husky Pre-commit Hook                   │"
-  echo "├────────────────────────────────────────────┤"
-  echo "│ 🧼 Running lint-staged (ESLint + Prettier) │"
-  echo "└────────────────────────────────────────────┘"
-}
-
-print_success_box() {
+# Bordered commit message validation
+print_commit_msg_header() {
   echo ""
   echo "┌────────────────────────────────────────────┐"
-  echo "│ ✅ All good! Pre-commit checks passed.     │"
+  echo "│ 🧾 Validating commit message format        │"
   echo "└────────────────────────────────────────────┘"
 }
 
-print_fail_box() {
+print_commit_passed() {
   echo ""
   echo "┌────────────────────────────────────────────┐"
-  echo "│ ❌ Lint errors detected!                   │"
-  echo "│ 💡 Please fix them before committing.      │"
+  echo "│ ✅ Commit message is valid.                │"
   echo "└────────────────────────────────────────────┘"
 }
 
-# Start
-echo ""
-print_boxed_message
-echo ""
+print_commit_failed() {
+  echo ""
+  echo "┌────────────────────────────────────────────┐"
+  echo "│ ❌ Invalid commit message format!          │"
+  echo "│ 💡 Use format: type: description           │"
+  echo "│                                            │"
+  echo "│ Allowed types:                            │"
+  echo "│  feature, fix, chore, docs, refactor,      │"
+  echo "│  test, ci, api, ui, style, initial         │"
+  echo "│                                            │"
+  echo "│ ✏️  Example: feature: add login flow       │"
+  echo "└────────────────────────────────────────────┘"
+}
 
-pnpm lint-staged
-LINT_EXIT_CODE=$?
+# Run commitlint
+print_commit_msg_header
+npx --no-install commitlint --edit "$1"
 
-if [ $LINT_EXIT_CODE -eq 0 ]; then
-  print_success_box
+if [ $? -eq 0 ]; then
+  print_commit_passed
 else
-  print_fail_box
+  print_commit_failed
   exit 1
 fi
