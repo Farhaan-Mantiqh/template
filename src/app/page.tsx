@@ -38,6 +38,7 @@ export default function HomePage() {
         theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'
       }`}>
       <h1 className="mb-4 text-3xl font-bold">Current Theme: {theme}</h1>
+      <h3>To change the theme please press the button</h3>
       <Button onClick={toggleTheme}>
         {theme === 'light' ? 'Light' : 'Dark'}
       </Button>
